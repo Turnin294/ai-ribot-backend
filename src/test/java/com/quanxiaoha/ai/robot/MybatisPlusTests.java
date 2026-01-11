@@ -1,7 +1,7 @@
 package com.quanxiaoha.ai.robot;
 
 
-import com.quanxiaoha.ai.robot.domain.docs.ChatDO;
+import com.quanxiaoha.ai.robot.domain.dos.ChatDO;
 import com.quanxiaoha.ai.robot.domain.mapper.ChatMapper;
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;

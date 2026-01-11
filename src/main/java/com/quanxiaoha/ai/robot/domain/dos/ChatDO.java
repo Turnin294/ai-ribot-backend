@@ -1,4 +1,4 @@
-package com.quanxiaoha.ai.robot.domain.docs;
+package com.quanxiaoha.ai.robot.domain.dos;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
