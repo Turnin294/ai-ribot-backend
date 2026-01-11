@@ -13,6 +13,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.YearMonthSerializer;
 import com.quanxiaoha.ai.robot.constant.DateConstants;
+import com.quanxiaoha.ai.robot.utils.JsonUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -60,7 +61,8 @@ public class JacksonConfig {
         javaTimeModule.addDeserializer(YearMonth.class, new YearMonthDeserializer(DateConstants.DATE_FORMAT_Y_M));
 
         objectMapper.registerModule(javaTimeModule);
-
+        // 初始化 JsonUtils 中的 ObjectMapper
+        JsonUtil.init(objectMapper);
         return objectMapper;
     }
 
