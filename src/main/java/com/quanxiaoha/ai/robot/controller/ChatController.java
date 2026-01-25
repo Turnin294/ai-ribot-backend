@@ -1,8 +1,10 @@
 package com.quanxiaoha.ai.robot.controller;
 
 import com.google.common.collect.Lists;
-import com.quanxiaoha.ai.robot.advisor.CustomStreamLoggerAdvisor;
+import com.quanxiaoha.ai.robot.advisor.CustomStreamLoggerAndMessage2DBAdvisor;
 import com.quanxiaoha.ai.robot.aspect.ApiOperationLog;
+import com.quanxiaoha.ai.robot.domain.mapper.ChatMapper;
+import com.quanxiaoha.ai.robot.domain.mapper.ChatMessageMapper;
 import com.quanxiaoha.ai.robot.model.vo.chat.AIResponse;
 import com.quanxiaoha.ai.robot.model.vo.chat.AiChatReqVO;
 import com.quanxiaoha.ai.robot.model.vo.chat.NewChatReqVO;
@@ -18,6 +20,7 @@ import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.openai.api.OpenAiApi;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,6 +48,11 @@ public class ChatController {
     private String baseUrl;
     @Value("${spring.ai.openai.api-key}")
     private String apiKey;
+
+    @Resource
+    private ChatMessageMapper chatMessageMapper;
+    @Resource
+    private TransactionTemplate transactionTemplate;
 
     @PostMapping("/new")
     @ApiOperationLog(description = "新建对话")
@@ -82,10 +90,11 @@ public class ChatController {
                         .temperature(temperature)
                         .build())
                 .user(userMessage); // 用户提示词
-                // Advisor 集合
+
+        // Advisor 集合
         List<Advisor> advisors = Lists.newArrayList();
         // 添加自定义打印流式对话日志 Advisor
-        advisors.add(new CustomStreamLoggerAdvisor());
+        advisors.add(new CustomStreamLoggerAndMessage2DBAdvisor(chatMessageMapper, aiChatReqVO, transactionTemplate));
 
         // 应用 Advisor 集合
         chatClientRequestSpec.advisors(advisors);
