@@ -1,6 +1,7 @@
 package com.quanxiaoha.ai.robot.controller;
 
 import com.google.common.collect.Lists;
+import com.quanxiaoha.ai.robot.advisor.CustomChatMemoryAdvisor;
 import com.quanxiaoha.ai.robot.advisor.CustomStreamLoggerAndMessage2DBAdvisor;
 import com.quanxiaoha.ai.robot.aspect.ApiOperationLog;
 import com.quanxiaoha.ai.robot.domain.mapper.ChatMapper;
@@ -95,7 +96,8 @@ public class ChatController {
         List<Advisor> advisors = Lists.newArrayList();
         // 添加自定义打印流式对话日志 Advisor
         advisors.add(new CustomStreamLoggerAndMessage2DBAdvisor(chatMessageMapper, aiChatReqVO, transactionTemplate));
-
+        // 添加自定义对话记忆 Advisor（以最新的 50 条消息作为记忆）
+        advisors.add(new CustomChatMemoryAdvisor(chatMessageMapper, aiChatReqVO, 50));
         // 应用 Advisor 集合
         chatClientRequestSpec.advisors(advisors);
 
