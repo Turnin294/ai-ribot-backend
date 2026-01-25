@@ -20,13 +20,14 @@ public enum ResponseCodeEnum implements BaseExceptionInterface {
 
 
     // ----------- 业务异常状态码 -----------
-    // TODO 待填充
+    CHAT_NOT_EXISTED("20000", "此对话不存在"),
     ;
 
     // 异常码
     private String errorCode;
     // 错误信息
     private String errorMessage;
+
 
 }
 

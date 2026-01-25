@@ -34,5 +34,17 @@ PageResponse<FindChatHistoryMessagePageListRspVO> findChatHistoryMessagePageList
      * @return
      */
  PageResponse<FindChatHistoryPageListRspVO> findChatHistoryPageList(FindChatHistoryPageListReqVO findChatHistoryPageListReqVO);
+  /**
+     * 重命名对话摘要
+     * @param renameChatReqVO
+     * @return
+     */
+    Response<?> renameChatSummary(RenameChatReqVO renameChatReqVO);
+    /**
+     * 删除对话
+     * @param deleteChatReqVO
+     * @return
+     */
+    Response<?> deleteChat(DeleteChatReqVO deleteChatReqVO);
 }
 
