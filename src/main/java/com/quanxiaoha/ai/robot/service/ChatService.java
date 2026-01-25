@@ -1,10 +1,7 @@
 package com.quanxiaoha.ai.robot.service;
 
 
-import com.quanxiaoha.ai.robot.model.vo.chat.FindChatHistoryMessagePageListReqVO;
-import com.quanxiaoha.ai.robot.model.vo.chat.FindChatHistoryMessagePageListRspVO;
-import com.quanxiaoha.ai.robot.model.vo.chat.NewChatReqVO;
-import com.quanxiaoha.ai.robot.model.vo.chat.NewChatRspVO;
+import com.quanxiaoha.ai.robot.model.vo.chat.*;
 import com.quanxiaoha.ai.robot.utils.PageResponse;
 import com.quanxiaoha.ai.robot.utils.Response;
 
@@ -28,7 +25,14 @@ public interface ChatService {
      * @param findChatHistoryMessagePageListReqVO
      * @return
      */
-    PageResponse<FindChatHistoryMessagePageListRspVO> findChatHistoryMessagePageList(FindChatHistoryMessagePageListReqVO findChatHistoryMessagePageListReqVO);
 
+PageResponse<FindChatHistoryMessagePageListRspVO> findChatHistoryMessagePageList(FindChatHistoryMessagePageListReqVO findChatHistoryMessagePageListReqVO);
+
+    /**
+     * 查询历史对话
+     * @param findChatHistoryPageListReqVO
+     * @return
+     */
+ PageResponse<FindChatHistoryPageListRspVO> findChatHistoryPageList(FindChatHistoryPageListReqVO findChatHistoryPageListReqVO);
 }
 
