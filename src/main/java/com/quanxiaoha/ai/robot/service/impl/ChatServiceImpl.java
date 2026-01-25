@@ -171,7 +171,11 @@ public class ChatServiceImpl implements ChatService {
     public Response<?> deleteChat(DeleteChatReqVO deleteChatReqVO) {
         // 对话 UUID
         String uuid = deleteChatReqVO.getUuid();
-
+        // 1. 去除可能存在的空格
+        if (uuid != null) {
+            uuid = uuid.trim();
+        }
+        log.info("准备删除对话, uuid: {}", uuid);
         // 删除对话
         int count = chatMapper.delete(Wrappers.<ChatDO>lambdaQuery()
                 .eq(ChatDO::getUuid, uuid));
