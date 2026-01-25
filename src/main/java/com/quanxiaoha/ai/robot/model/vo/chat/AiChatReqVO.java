@@ -30,7 +30,7 @@ public class AiChatReqVO {
     /**
      * 联网搜索
      */
-    private Boolean networkSearch = false;
+    private Boolean networkSearch = true;
 
     @NotBlank(message = "调用的 AI 大模型名称不能为空")
     private String modelName;
