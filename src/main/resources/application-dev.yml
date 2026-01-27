@@ -42,5 +42,8 @@ searxng: # SearXNG 搜索引擎配置
 
 customer-service:
   md-storage-path: D:\\airobot_md # Markdown 问答文件存储路径
+  model: deepseek-v3.2# 模型名称
+  temperature: 0.0 # 温度值
+
 
 
