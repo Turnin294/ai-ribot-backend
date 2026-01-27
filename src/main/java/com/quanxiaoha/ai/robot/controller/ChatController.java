@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -107,6 +108,7 @@ public class ChatController {
 
         // 是否开启了联网搜索
         if (networkSearch) {
+            log.info("开启联网搜索");
             advisors.add(new NetworkSearchAdvisor(searXNGService, searchResultContentFetcherService));
         } else {
             // 添加自定义对话记忆 Advisor（以最新的 50 条消息作为记忆）
@@ -120,26 +122,30 @@ public class ChatController {
         chatClientRequestSpec = chatClientRequestSpec.advisors(advisors);
 
         // 流式输出
+         // 流式输出
         return chatClientRequestSpec
                 .stream()
                 .chatResponse()
                 .mapNotNull(chatResponse -> { // 构建返参 AIResponse
-                    // 获取 AI 回复的消息
-                    AssistantMessage message = chatResponse.getResult().getOutput();
+                    if (Objects.nonNull(chatResponse) && Objects.nonNull(chatResponse.getResult())) {
+                        // 获取 AI 回复的消息
+                        AssistantMessage message = chatResponse.getResult().getOutput();
 
-                    // 获取正式回答
-                    String text = message.getText();
+                        // 获取正式回答
+                        String text = message.getText();
 
-                    // 获取推理内容（如果存在）
-                    String reasoningContent = message.getMetadata().get("reasoningContent").toString();
+                        // 获取推理内容（如果存在）
+                        String reasoningContent = message.getMetadata().get("reasoningContent").toString();
 
-                    // 构建响应对象
-                    if (StringUtils.isNotBlank(reasoningContent)) {
-                        // 返回思考过程
-                        return AIResponse.builder().reasoning(reasoningContent).build();
+                        // 构建响应对象
+                        if (StringUtils.isNotBlank(reasoningContent)) {
+                            // 返回思考过程
+                            return AIResponse.builder().reasoning(reasoningContent).build();
+                        }
+
+                        return AIResponse.builder().v(text).build();
                     }
-
-                    return AIResponse.builder().v(text).build();
+                    return null;
                 });
 
     }
