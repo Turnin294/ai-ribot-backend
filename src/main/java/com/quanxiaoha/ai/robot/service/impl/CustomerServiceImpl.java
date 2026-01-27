@@ -4,6 +4,7 @@ import com.quanxiaoha.ai.robot.domain.dos.AiCustomerServiceMdStorageDO;
 import com.quanxiaoha.ai.robot.domain.mapper.AiCustomerServiceMdStorageMapper;
 import com.quanxiaoha.ai.robot.enums.AiCustomerServiceMdStatusEnum;
 import com.quanxiaoha.ai.robot.enums.ResponseCodeEnum;
+import com.quanxiaoha.ai.robot.event.AiCustomerServiceMdUploadedEvent;
 import com.quanxiaoha.ai.robot.exception.BizException;
 import com.quanxiaoha.ai.robot.service.CustomerService;
 import com.quanxiaoha.ai.robot.utils.Response;
@@ -12,8 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -38,6 +39,8 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Resource
     private AiCustomerServiceMdStorageMapper aiCustomerServiceMdStorageMapper;
+    @Resource
+    private ApplicationEventPublisher eventPublisher; // 注入事件发布器
 
     /**
      * 上传 Markdown 问答文件
@@ -88,6 +91,10 @@ public class CustomerServiceImpl implements CustomerService {
                             .updateTime(LocalDateTime.now())
                             .build());
 
+            // 发布事件
+            eventPublisher.publishEvent(AiCustomerServiceMdUploadedEvent.builder()
+                            .filePath(targetPath.toString())
+                            .build());
 
             return Response.success();
 
@@ -110,4 +117,3 @@ public class CustomerServiceImpl implements CustomerService {
         return StringUtils.equalsIgnoreCase(extension, "md");
     }
 }
-
