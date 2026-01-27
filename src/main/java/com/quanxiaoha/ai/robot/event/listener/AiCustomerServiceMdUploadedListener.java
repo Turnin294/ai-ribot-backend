@@ -21,6 +21,7 @@ public class AiCustomerServiceMdUploadedListener {
      * @param event
      */
     @EventListener
+    @Async("eventTaskExecutor")
     public void vectorizing(AiCustomerServiceMdUploadedEvent event) {
         log.info("## AiCustomerServiceMdUploadedEvent: {}", event);
 
