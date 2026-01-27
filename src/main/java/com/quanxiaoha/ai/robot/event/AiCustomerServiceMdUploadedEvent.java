@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Map;
+
 /**
  * @Author: 犬小哈
  * @Date: 2025/11/2 22:31
@@ -18,8 +20,18 @@ import lombok.NoArgsConstructor;
 public class AiCustomerServiceMdUploadedEvent {
 
     /**
+     * t_ai_customer_service_md_storage 表记录主键 ID
+     */
+    private Long id;
+
+    /**
      * 存储路径
      */
     private String filePath;
+
+    /**
+     * 元数据
+     */
+    private Map<String, Object> metadatas;
 }
 

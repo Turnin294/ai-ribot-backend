@@ -32,6 +32,18 @@
     </properties>
 
     <dependencies>
+                <!-- PGvector 向量化存储 -->
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-starter-vector-store-pgvector</artifactId>
+        </dependency>
+
+
+          <!-- 读取 Markdown，并解析为 Document 文档 -->
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-markdown-document-reader</artifactId>
+        </dependency>
           <!-- OKHttp-->
           <!-- 分页插件 -->
           <dependency>

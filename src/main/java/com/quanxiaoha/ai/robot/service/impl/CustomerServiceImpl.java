@@ -1,5 +1,6 @@
 package com.quanxiaoha.ai.robot.service.impl;
 
+import com.google.common.collect.Maps;
 import com.quanxiaoha.ai.robot.domain.dos.AiCustomerServiceMdStorageDO;
 import com.quanxiaoha.ai.robot.domain.mapper.AiCustomerServiceMdStorageMapper;
 import com.quanxiaoha.ai.robot.enums.AiCustomerServiceMdStatusEnum;
@@ -22,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -80,20 +82,32 @@ public class CustomerServiceImpl implements CustomerService {
             // 记录操作日志
             log.info("## Markdown 问答文件存储成功, 文件名：{} -> 存储路径：{}", originalFilename, targetPath);
 
-            // 存储入库
-            aiCustomerServiceMdStorageMapper.insert(AiCustomerServiceMdStorageDO.builder()
-                            .originalFileName(originalFilename)
-                            .newFileName(newFilename)
-                            .filePath(targetPath.toString())
-                            .fileSize(file.getSize())
-                            .status(AiCustomerServiceMdStatusEnum.PENDING.getCode())
-                            .createTime(LocalDateTime.now())
-                            .updateTime(LocalDateTime.now())
-                            .build());
+             // 存储入库
+            AiCustomerServiceMdStorageDO aiCustomerServiceMdStorageDO = AiCustomerServiceMdStorageDO.builder()
+                    .originalFileName(originalFilename)
+                    .newFileName(newFilename)
+                    .filePath(targetPath.toString())
+                    .fileSize(file.getSize())
+                    .status(AiCustomerServiceMdStatusEnum.PENDING.getCode())
+                    .createTime(LocalDateTime.now())
+                    .updateTime(LocalDateTime.now())
+                    .build();
+
+            aiCustomerServiceMdStorageMapper.insert(aiCustomerServiceMdStorageDO);
+
+            // 获取主键 ID
+            Long id =  aiCustomerServiceMdStorageDO.getId();
+
+            // 元数据
+            Map<String, Object> metadatas = Maps.newHashMap();
+            metadatas.put("mdStorageId", id); // 关联的文件存储表主键 ID
+            metadatas.put("originalFileName", originalFilename); // 文件原始名称
 
             // 发布事件
             eventPublisher.publishEvent(AiCustomerServiceMdUploadedEvent.builder()
+                            .id(id)
                             .filePath(targetPath.toString())
+                            .metadatas(metadatas)
                             .build());
 
             return Response.success();
