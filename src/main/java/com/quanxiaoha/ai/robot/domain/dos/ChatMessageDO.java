@@ -29,5 +29,6 @@ public class ChatMessageDO {
     private String content;
     private String role;
     private LocalDateTime createTime;
+    private String reasoningContent;
 }
 

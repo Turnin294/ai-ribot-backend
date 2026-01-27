@@ -1,5 +1,6 @@
 package com.quanxiaoha.ai.robot.controller;
 
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.google.common.collect.Lists;
 import com.quanxiaoha.ai.robot.advisor.CustomChatMemoryAdvisor;
 import com.quanxiaoha.ai.robot.advisor.CustomStreamLoggerAndMessage2DBAdvisor;
@@ -17,6 +18,7 @@ import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.api.Advisor;
+import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.ai.openai.OpenAiChatOptions;
@@ -120,8 +122,25 @@ public class ChatController {
         // 流式输出
         return chatClientRequestSpec
                 .stream()
-                .content()
-                .mapNotNull(text -> AIResponse.builder().v(text).build()); // 构建返参 AIResponse
+                .chatResponse()
+                .mapNotNull(chatResponse -> { // 构建返参 AIResponse
+                    // 获取 AI 回复的消息
+                    AssistantMessage message = chatResponse.getResult().getOutput();
+
+                    // 获取正式回答
+                    String text = message.getText();
+
+                    // 获取推理内容（如果存在）
+                    String reasoningContent = message.getMetadata().get("reasoningContent").toString();
+
+                    // 构建响应对象
+                    if (StringUtils.isNotBlank(reasoningContent)) {
+                        // 返回思考过程
+                        return AIResponse.builder().reasoning(reasoningContent).build();
+                    }
+
+                    return AIResponse.builder().v(text).build();
+                });
 
     }
    @PostMapping("/message/list")
