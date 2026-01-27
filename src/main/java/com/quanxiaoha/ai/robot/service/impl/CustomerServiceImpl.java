@@ -13,6 +13,7 @@ import com.quanxiaoha.ai.robot.exception.BizException;
 import com.quanxiaoha.ai.robot.model.vo.customerService.DeleteMarkdownFileReqVO;
 import com.quanxiaoha.ai.robot.model.vo.customerService.FindMarkdownFilePageListReqVO;
 import com.quanxiaoha.ai.robot.model.vo.customerService.FindMarkdownFilePageListRspVO;
+import com.quanxiaoha.ai.robot.model.vo.customerService.UpdateMarkdownFileReqVO;
 import com.quanxiaoha.ai.robot.service.CustomerService;
 import com.quanxiaoha.ai.robot.utils.PageResponse;
 import com.quanxiaoha.ai.robot.utils.Response;
@@ -222,5 +223,32 @@ public class CustomerServiceImpl implements CustomerService {
         }
 
         return PageResponse.success(mdStorageDOPage, vos);
+    }
+     /**
+     * 修改  Markdown 问答文件信息
+     *
+     * @param updateMarkdownFileReqVO
+     * @return
+     */
+    @Override
+    public Response<?> updateMarkdownFile(UpdateMarkdownFileReqVO updateMarkdownFileReqVO) {
+        // 文件 ID
+        Long id = updateMarkdownFileReqVO.getId();
+        // 备注
+        String remark = updateMarkdownFileReqVO.getRemark();
+
+        // 根据 ID 修改备注信息
+        int count = aiCustomerServiceMdStorageMapper.updateById(AiCustomerServiceMdStorageDO.builder()
+                        .id(id)
+                        .remark(remark)
+                        .updateTime(LocalDateTime.now())
+                        .build());
+
+        // 若影响的行数为 0， 说明该文件记录不存在
+        if (count == 0 ) {
+            throw new BizException(ResponseCodeEnum.MARKDOWN_FILE_NOT_FOUND);
+        }
+
+        return Response.success();
     }
 }

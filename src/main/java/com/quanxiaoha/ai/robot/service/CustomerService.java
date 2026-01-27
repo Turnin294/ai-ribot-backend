@@ -4,6 +4,7 @@ package com.quanxiaoha.ai.robot.service;
 import com.quanxiaoha.ai.robot.model.vo.customerService.DeleteMarkdownFileReqVO;
 import com.quanxiaoha.ai.robot.model.vo.customerService.FindMarkdownFilePageListReqVO;
 import com.quanxiaoha.ai.robot.model.vo.customerService.FindMarkdownFilePageListRspVO;
+import com.quanxiaoha.ai.robot.model.vo.customerService.UpdateMarkdownFileReqVO;
 import com.quanxiaoha.ai.robot.utils.PageResponse;
 import com.quanxiaoha.ai.robot.utils.Response;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,5 +35,11 @@ public interface CustomerService {
      * @return
      */
     PageResponse<FindMarkdownFilePageListRspVO> findMarkdownFilePageList(FindMarkdownFilePageListReqVO findMarkdownFilePageListReqVO);
+    /**
+     * 修改  Markdown 问答文件信息
+     * @param updateMarkdownFileReqVO
+     * @return
+     */
+    Response<?> updateMarkdownFile(UpdateMarkdownFileReqVO updateMarkdownFileReqVO);
 }
 

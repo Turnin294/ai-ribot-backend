@@ -10,6 +10,7 @@ import com.quanxiaoha.ai.robot.model.vo.chat.*;
 import com.quanxiaoha.ai.robot.model.vo.customerService.DeleteMarkdownFileReqVO;
 import com.quanxiaoha.ai.robot.model.vo.customerService.FindMarkdownFilePageListReqVO;
 import com.quanxiaoha.ai.robot.model.vo.customerService.FindMarkdownFilePageListRspVO;
+import com.quanxiaoha.ai.robot.model.vo.customerService.UpdateMarkdownFileReqVO;
 import com.quanxiaoha.ai.robot.service.ChatService;
 import com.quanxiaoha.ai.robot.service.CustomerService;
 import com.quanxiaoha.ai.robot.service.SearXNGService;
@@ -70,5 +71,12 @@ public class AiCustomerServiceController {
     public PageResponse<FindMarkdownFilePageListRspVO> findMarkdownFilePageList(@RequestBody @Validated FindMarkdownFilePageListReqVO findMarkdownFilePageListReqVO) {
         return customerService.findMarkdownFilePageList(findMarkdownFilePageListReqVO);
     }
+
+    @PostMapping("/md/update")
+    @ApiOperationLog(description = "修改 Markdown 问答文件信息")
+    public Response<?> updateMarkdownFile(@RequestBody @Validated UpdateMarkdownFileReqVO updateMarkdownFileReqVO) {
+        return customerService.updateMarkdownFile(updateMarkdownFileReqVO);
+    }
+
 
 }
