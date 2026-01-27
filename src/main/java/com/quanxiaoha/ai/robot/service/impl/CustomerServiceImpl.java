@@ -1,5 +1,8 @@
 package com.quanxiaoha.ai.robot.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.io.unit.DataSizeUtil;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Maps;
 import com.quanxiaoha.ai.robot.domain.dos.AiCustomerServiceMdStorageDO;
 import com.quanxiaoha.ai.robot.domain.mapper.AiCustomerServiceMdStorageMapper;
@@ -7,24 +10,35 @@ import com.quanxiaoha.ai.robot.enums.AiCustomerServiceMdStatusEnum;
 import com.quanxiaoha.ai.robot.enums.ResponseCodeEnum;
 import com.quanxiaoha.ai.robot.event.AiCustomerServiceMdUploadedEvent;
 import com.quanxiaoha.ai.robot.exception.BizException;
+import com.quanxiaoha.ai.robot.model.vo.customerService.DeleteMarkdownFileReqVO;
+import com.quanxiaoha.ai.robot.model.vo.customerService.FindMarkdownFilePageListReqVO;
+import com.quanxiaoha.ai.robot.model.vo.customerService.FindMarkdownFilePageListRspVO;
 import com.quanxiaoha.ai.robot.service.CustomerService;
+import com.quanxiaoha.ai.robot.utils.PageResponse;
 import com.quanxiaoha.ai.robot.utils.Response;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * @Author: 犬小哈
@@ -43,7 +57,8 @@ public class CustomerServiceImpl implements CustomerService {
     private AiCustomerServiceMdStorageMapper aiCustomerServiceMdStorageMapper;
     @Resource
     private ApplicationEventPublisher eventPublisher; // 注入事件发布器
-
+    @Resource
+    private VectorStore vectorStore;
     /**
      * 上传 Markdown 问答文件
      *
@@ -129,5 +144,83 @@ public class CustomerServiceImpl implements CustomerService {
         // 获取文件扩展名
         String extension = FilenameUtils.getExtension(filename);
         return StringUtils.equalsIgnoreCase(extension, "md");
+    }
+
+    /**
+     * 删除 Markdown 问答文件
+     *
+     * @param deleteMarkdownFileReqVO
+     * @return
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Response<?> deleteMarkdownFile(DeleteMarkdownFileReqVO deleteMarkdownFileReqVO) {
+        // 文件记录 ID
+        Long id = deleteMarkdownFileReqVO.getId();
+
+        // 查询该文件记录
+        AiCustomerServiceMdStorageDO aiCustomerServiceMdStorageDO = aiCustomerServiceMdStorageMapper.selectById(id);
+
+        // 若记录不存在
+        if (Objects.isNull(aiCustomerServiceMdStorageDO)) {
+            throw new BizException(ResponseCodeEnum.MARKDOWN_FILE_NOT_FOUND);
+        }
+
+        // 正在处理中的文件，无法删除
+        AiCustomerServiceMdStatusEnum statusEnum = AiCustomerServiceMdStatusEnum.codeOf(aiCustomerServiceMdStorageDO.getStatus());
+        if (Objects.equals(statusEnum, AiCustomerServiceMdStatusEnum.PENDING) // 待向量化
+                || Objects.equals(statusEnum, AiCustomerServiceMdStatusEnum.VECTORIZING)) { // 向量化中...
+            throw new BizException(ResponseCodeEnum.MARKDOWN_FILE_CANT_DELETE);
+        }
+
+        // 删除文件表记录
+        aiCustomerServiceMdStorageMapper.deleteById(id);
+
+        // 删除向量化数据
+        vectorStore.delete(String.format("mdStorageId == %s", id));
+
+        // 删除本地文件
+        String filePath = aiCustomerServiceMdStorageDO.getFilePath();
+        try {
+            FileUtils.forceDelete(new File(filePath));
+        } catch (IOException e) {
+            log.error("## Markdown 问答文件删除失败：", e);
+        }
+
+        return Response.success();
+    }
+    /**
+     * 分页查询 Markdown 问答文件
+     *
+     * @param findMarkdownFilePageListReqVO
+     * @return
+     */
+    @Override
+    public PageResponse<FindMarkdownFilePageListRspVO> findMarkdownFilePageList(FindMarkdownFilePageListReqVO findMarkdownFilePageListReqVO) {
+        // 获取当前页、以及每页需要展示的数据数量
+        Long current = findMarkdownFilePageListReqVO.getCurrent();
+        Long size = findMarkdownFilePageListReqVO.getSize();
+
+        // 执行分页查询
+        Page<AiCustomerServiceMdStorageDO> mdStorageDOPage = aiCustomerServiceMdStorageMapper.selectPageList(current, size);
+
+        List<AiCustomerServiceMdStorageDO> mdStorageDOS = mdStorageDOPage.getRecords();
+        // DO 转 VO
+        List<FindMarkdownFilePageListRspVO> vos = null;
+        if (CollUtil.isNotEmpty(mdStorageDOS)) {
+            vos = mdStorageDOS.stream()
+                    .map(mdStorageDO -> FindMarkdownFilePageListRspVO.builder() // 构建返参 VO 实体类
+                            .id(mdStorageDO.getId())
+                            .originalFileName(mdStorageDO.getOriginalFileName())
+                            .fileSize(DataSizeUtil.format(mdStorageDO.getFileSize())) // Hutool 工具库提供的字节转换
+                            .status(mdStorageDO.getStatus())
+                            .createTime(mdStorageDO.getCreateTime())
+                            .updateTime(mdStorageDO.getUpdateTime())
+                            .remark(mdStorageDO.getRemark())
+                            .build())
+                    .collect(Collectors.toList());
+        }
+
+        return PageResponse.success(mdStorageDOPage, vos);
     }
 }

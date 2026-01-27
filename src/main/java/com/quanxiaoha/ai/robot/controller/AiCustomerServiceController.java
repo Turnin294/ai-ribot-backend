@@ -7,6 +7,9 @@ import com.quanxiaoha.ai.robot.advisor.NetworkSearchAdvisor;
 import com.quanxiaoha.ai.robot.aspect.ApiOperationLog;
 import com.quanxiaoha.ai.robot.domain.mapper.ChatMessageMapper;
 import com.quanxiaoha.ai.robot.model.vo.chat.*;
+import com.quanxiaoha.ai.robot.model.vo.customerService.DeleteMarkdownFileReqVO;
+import com.quanxiaoha.ai.robot.model.vo.customerService.FindMarkdownFilePageListReqVO;
+import com.quanxiaoha.ai.robot.model.vo.customerService.FindMarkdownFilePageListRspVO;
 import com.quanxiaoha.ai.robot.service.ChatService;
 import com.quanxiaoha.ai.robot.service.CustomerService;
 import com.quanxiaoha.ai.robot.service.SearXNGService;
@@ -48,6 +51,7 @@ public class AiCustomerServiceController {
 
     /**
      * 问答 MD 文件上传
+     *
      * @param file
      * @return
      */
@@ -56,5 +60,15 @@ public class AiCustomerServiceController {
         return customerService.uploadMarkdownFile(file);
     }
 
-}
+    @PostMapping("/md/delete")
+    @ApiOperationLog(description = "删除 Markdown 问答文件")
+    public Response<?> deleteMarkdownFile(@RequestBody @Validated DeleteMarkdownFileReqVO deleteMarkdownFileReqVO) {
+        return customerService.deleteMarkdownFile(deleteMarkdownFileReqVO);
+    }
+    @PostMapping("/md/list")
+    @ApiOperationLog(description = "Markdown 问答文件分页查询")
+    public PageResponse<FindMarkdownFilePageListRspVO> findMarkdownFilePageList(@RequestBody @Validated FindMarkdownFilePageListReqVO findMarkdownFilePageListReqVO) {
+        return customerService.findMarkdownFilePageList(findMarkdownFilePageListReqVO);
+    }
 
+}
