@@ -27,10 +27,10 @@ import java.util.stream.StreamSupport;
  **/
 @Service
 @Slf4j
-public class SearXNGServiceImpl implements SearXNGService{
+public class SearXNGServiceImpl implements SearXNGService {
 
     @Resource
-    private OkHttpClient  okHttpClient;
+    private OkHttpClient okHttpClient;
     @Resource
     private ObjectMapper objectMapper;
     @Value("${searxng.url}")
@@ -44,14 +44,16 @@ public class SearXNGServiceImpl implements SearXNGService{
         HttpUrl httpUrl = HttpUrl.parse(searxngUrl).newBuilder()
                 .addQueryParameter("q", query) // 设置搜索关键词
                 .addQueryParameter("format", "json") // 指定返回 JSON 格式
-                .addQueryParameter("engines", "wolframalpha,presearch,seznam,mwmbl,encyclosearch,bpb,mojeek,right dao,wikimini,crowdview,searchmysite,bing,naver,360search") // 指定聚合的目标搜索引擎（配置本地网络能够访问的通的搜索引擎）
+                .addQueryParameter("engines",
+                        "wolframalpha,presearch,seznam,mwmbl,encyclosearch,bpb,mojeek,right dao,wikimini,crowdview,searchmysite,bing,naver,360search") // 指定聚合的目标搜索引擎（配置本地网络能够访问的通的搜索引擎）
                 .build();
 
         // 创建 HTTP GET 请求
         Request request = new Request.Builder()
-                        .url(httpUrl)
-                        .get()
-                        .build();
+                .url(httpUrl)
+                .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36") // 增加伪装
+                .get()
+                .build();
 
         // 发送 HTTP 请求
         try (Response response = okHttpClient.newCall(request).execute()) {
@@ -66,7 +68,8 @@ public class SearXNGServiceImpl implements SearXNGService{
                 JsonNode results = root.get("results"); // 获取结果数组节点
 
                 // 定义 Record 类型：用于临时存储分数和节点引用
-                record NodeWithUrlAndScore(double score, JsonNode node) {}
+                record NodeWithUrlAndScore(double score, JsonNode node) {
+                }
 
                 // 处理搜索结果流：
                 // 1. 提取评分
@@ -93,13 +96,15 @@ public class SearXNGServiceImpl implements SearXNGService{
                                     .build();
                         })
                         .collect(Collectors.toList());
+            } else {
+                log.error("## SearXNG 请求失败, Code: {}, Message: {}", response.code(), response.message());
+
             }
         } catch (Exception e) {
             log.error("", e);
         }
         // 返回空集合
-        return Collections.emptyList() ;
+        return Collections.emptyList();
     }
 
 }
-

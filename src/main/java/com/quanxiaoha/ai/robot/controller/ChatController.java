@@ -1,12 +1,10 @@
 package com.quanxiaoha.ai.robot.controller;
 
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.google.common.collect.Lists;
 import com.quanxiaoha.ai.robot.advisor.CustomChatMemoryAdvisor;
 import com.quanxiaoha.ai.robot.advisor.CustomStreamLoggerAndMessage2DBAdvisor;
 import com.quanxiaoha.ai.robot.advisor.NetworkSearchAdvisor;
 import com.quanxiaoha.ai.robot.aspect.ApiOperationLog;
-import com.quanxiaoha.ai.robot.domain.mapper.ChatMapper;
 import com.quanxiaoha.ai.robot.domain.mapper.ChatMessageMapper;
 import com.quanxiaoha.ai.robot.model.vo.chat.*;
 import com.quanxiaoha.ai.robot.service.ChatService;
@@ -16,6 +14,7 @@ import com.quanxiaoha.ai.robot.utils.PageResponse;
 import com.quanxiaoha.ai.robot.utils.Response;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.api.Advisor;
 import org.springframework.ai.chat.messages.AssistantMessage;
@@ -108,7 +107,6 @@ public class ChatController {
 
         // 是否开启了联网搜索
         if (networkSearch) {
-            log.info("开启联网搜索");
             advisors.add(new NetworkSearchAdvisor(searXNGService, searchResultContentFetcherService));
         } else {
             // 添加自定义对话记忆 Advisor（以最新的 50 条消息作为记忆）
@@ -119,10 +117,15 @@ public class ChatController {
         advisors.add(new CustomStreamLoggerAndMessage2DBAdvisor(chatMessageMapper, aiChatReqVO, transactionTemplate));
 
         // 应用 Advisor 集合
-        chatClientRequestSpec = chatClientRequestSpec.advisors(advisors);
+        chatClientRequestSpec.advisors(advisors);
 
         // 流式输出
-         // 流式输出
+//        return chatClientRequestSpec
+//                .stream()
+//                .content()
+//                .mapNotNull(text -> AIResponse.builder().v(text).build()); // 构建返参 AIResponse
+
+        // 流式输出
         return chatClientRequestSpec
                 .stream()
                 .chatResponse()
@@ -145,29 +148,34 @@ public class ChatController {
 
                         return AIResponse.builder().v(text).build();
                     }
+
                     return null;
                 });
+    }
 
-    }
-   @PostMapping("/message/list")
-    @ApiOperationLog(description = "查询对话历史消息")
-    public PageResponse<FindChatHistoryMessagePageListRspVO> findChatMessagePageList(@RequestBody @Validated FindChatHistoryMessagePageListReqVO findChatHistoryMessagePageListReqVO) {
-        return chatService.findChatHistoryMessagePageList(findChatHistoryMessagePageListReqVO);
-    }
-     @PostMapping("/list")
+    @PostMapping("/list")
     @ApiOperationLog(description = "查询历史对话")
     public PageResponse<FindChatHistoryPageListRspVO> findChatHistoryPageList(@RequestBody @Validated FindChatHistoryPageListReqVO findChatHistoryPageListReqVO) {
         return chatService.findChatHistoryPageList(findChatHistoryPageListReqVO);
     }
- @PostMapping("/summary/rename")
+
+    @PostMapping("/message/list")
+    @ApiOperationLog(description = "查询对话历史消息")
+    public PageResponse<FindChatHistoryMessagePageListRspVO> findChatMessagePageList(@RequestBody @Validated FindChatHistoryMessagePageListReqVO findChatHistoryMessagePageListReqVO) {
+        return chatService.findChatHistoryMessagePageList(findChatHistoryMessagePageListReqVO);
+    }
+
+    @PostMapping("/summary/rename")
     @ApiOperationLog(description = "重命名对话摘要")
     public Response<?> renameChatSummary(@RequestBody @Validated RenameChatReqVO renameChatReqVO) {
         return chatService.renameChatSummary(renameChatReqVO);
     }
-     @PostMapping("/delete")
+
+    @PostMapping("/delete")
     @ApiOperationLog(description = "删除对话")
     public Response<?> deleteChat(@RequestBody @Validated DeleteChatReqVO deleteChatReqVO) {
         return chatService.deleteChat(deleteChatReqVO);
     }
+
 
 }
