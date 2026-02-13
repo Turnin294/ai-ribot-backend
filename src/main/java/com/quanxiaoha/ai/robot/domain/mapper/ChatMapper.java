@@ -7,9 +7,6 @@ import com.quanxiaoha.ai.robot.domain.dos.ChatDO;
 
 
 /**
- * @Author: 犬小哈
- * @Date: 2025/8/11 11:36
- * @Version: v1.0.0
  **/
 public interface ChatMapper extends BaseMapper<ChatDO> {
      /**

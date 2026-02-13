@@ -6,9 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * @Author: 犬小哈
- * @Date: 2025/6/15 9:00
- * @Version: v1.0.0
  * @Description: AI 对话响应类
  **/
 @Data

@@ -22,9 +22,6 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * @Author: 犬小哈
- * @Date: 2025/5/26 16:36
- * @Version: v1.0.0
  * @Description: 自定义对话记忆 Advisor
  **/
 @Slf4j

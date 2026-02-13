@@ -9,9 +9,6 @@ import org.springframework.context.annotation.Configuration;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @Author: 犬小哈
- * @Date: 2025/7/29 20:13
- * @Version: v1.0.0
  * @Description: OkHttp 客户端配置类
  **/
 @Configuration

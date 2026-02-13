@@ -37,9 +37,6 @@ import java.util.Objects;
 
 
 /**
- * @Author: 犬小哈
- * @Date: 2025/5/22 12:25
- * @Version: v1.0.0
  * @Description: 对话
  **/
 @RestController

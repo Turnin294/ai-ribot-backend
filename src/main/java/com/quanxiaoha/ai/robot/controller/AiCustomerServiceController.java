@@ -27,9 +27,6 @@ import reactor.core.publisher.Flux;
 import java.util.List;
 
 /**
- * @Author: 犬小哈
- * @Date: 2025/5/22 12:25
- * @Version: v1.0.0
  * @Description: AI 客服
  **/
 @RestController

@@ -6,9 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * @Author: 犬小哈
- * @Date: 2025/7/30 12:12
- * @Version: v1.0.0
  * @Description: TODO
  **/
 @Data

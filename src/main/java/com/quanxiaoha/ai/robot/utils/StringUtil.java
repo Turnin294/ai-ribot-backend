@@ -3,9 +3,6 @@ package com.quanxiaoha.ai.robot.utils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * @Author: 犬小哈
- * @Date: 2025/8/22 8:30
- * @Version: v1.0.0
  * @Description: 字符串工具类
  **/
 public class StringUtil {

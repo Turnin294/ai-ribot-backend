@@ -9,3 +9,6 @@ out/
 
 # 忽略日志
 *.log
+.gemini/
+gha-creds-*.json
+

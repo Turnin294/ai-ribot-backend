@@ -9,9 +9,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
- * @Author: 犬小哈
- * @Date: 2025/11/2 22:53
- * @Version: v1.0.0
  * @Description: TODO
  **/
 @Configuration

@@ -11,9 +11,6 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 /**
- * @Author: 犬小哈
- * @Date: 2025/8/11 11:32
- * @Version: v1.0.0
  * @Description: 聊天消息 DO 实体类
  **/
 @Data

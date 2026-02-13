@@ -9,9 +9,6 @@ import java.time.LocalDateTime;
 
 
 /**
- * @author: 犬小哈
- * @url: www.quanxiaoha.com
- * @date: 2023-09-15 14:07
  * @description: 查询对话历史消息
  **/
 @Data

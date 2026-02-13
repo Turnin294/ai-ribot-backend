@@ -19,9 +19,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
- * @Author: 犬小哈
- * @Date: 2025/7/30 12:15
- * @Version: v1.0.0
  * @Description: 页面内容提取
  **/
 @Service

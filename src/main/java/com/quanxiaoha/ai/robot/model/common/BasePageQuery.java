@@ -3,9 +3,6 @@ package com.quanxiaoha.ai.robot.model.common;
 import lombok.Data;
 
 /**
- * @author: 犬小哈
- * @url: www.quanxiaoha.com
- * @date: 2023-09-19 8:54
  * @description: TODO
  **/
 @Data

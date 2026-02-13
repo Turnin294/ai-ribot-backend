@@ -20,9 +20,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @Author: 犬小哈
- * @Date: 2025/8/5 13:40
- * @Version: v1.0.0
  * @Description: 联网搜索 Advisor
  **/
 @Slf4j

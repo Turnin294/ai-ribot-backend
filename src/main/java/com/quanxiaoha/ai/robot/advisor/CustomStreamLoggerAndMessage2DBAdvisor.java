@@ -20,9 +20,6 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * @Author: 犬小哈
- * @Date: 2025/5/26 16:36
- * @Version: v1.0.0
  * @Description: 自定义打印流式日志 Advisor
  **/
 @Slf4j

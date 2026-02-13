@@ -21,9 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @Author: 犬小哈
- * @Date: 2025/11/2 22:36
- * @Version: v1.0.0
  * @Description: Markdown 文件上传事件监听
  **/
 @Component
